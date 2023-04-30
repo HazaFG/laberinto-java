@@ -14,14 +14,15 @@ import java.awt.Color;
 
 public class Ventana extends JFrame implements KeyListener{
 
-    public int px = 230;
-    public int py = 230;
+    public int px = 10;
+    public int py = 50;
 
     private JPanel fondo;
+    private boolean colision = false;  // variable para indicar si ha ocurrido una colisión
 
     public Ventana() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 700, 700);
+        setBounds(100, 100, 988, 988);
         this.setResizable(false);
         this.setVisible(true);
 
@@ -33,19 +34,19 @@ public class Ventana extends JFrame implements KeyListener{
 
         JPanel panelInferior = new JPanel();
         panelInferior.setBackground(new Color(128, 0, 0));
-        panelInferior.setBounds(0, 602, 684, 59);
+        panelInferior.setBounds(0, 890, 972, 59);
         panelInferior.setLayout(null);
         fondo.add(panelInferior);
 
 
         JButton btnNewButton = new JButton("Reiniciar");
         btnNewButton.setBackground(new Color(255, 255, 255));
-        btnNewButton.setBounds(291, 11, 107, 37);
+        btnNewButton.setBounds(448, 11, 107, 37);
         panelInferior.add(btnNewButton);
 
         JPanel panelJuego = new JPanel();
         panelJuego.setBackground(new Color(255, 255, 255));
-        panelJuego.setBounds(10, 11, 664, 580);
+        panelJuego.setBounds(10, 11, 952, 868);
         panelJuego.add(new MyPanel());
         panelJuego.setLayout(new GridLayout(1, 0, 0, 0));
         fondo.add(panelJuego);
@@ -70,28 +71,70 @@ public class Ventana extends JFrame implements KeyListener{
         // TODO Auto-generated method stub
         System.out.println(e.getKeyCode());
 
-        //Arriba
-        if(e.getKeyCode() == 87 && py > 10) {
-            py = py - 10;
-        }
+        if (!colision) {
+            System.out.println(e.getKeyCode());
 
-        //Abajo
-        if(e.getKeyCode() == 83 && py < 551) {
-            py = py + 10;
-        }
+            int dx = 0;
+            int dy = 0;
 
-        //Izquierda
-        if(e.getKeyCode() == 65 && px > 10 ) {
-            px = px - 10;
-        }
+            //Arriba
+            if(e.getKeyCode() == 87 && py > 10) {
+                //py = py - 10;
+                dy = dy - 10;
+            }
 
-        //Derecha
-        if(e.getKeyCode() == 68 && px < 640) {
-            px= px + 10;
-        }
+            //Abajo
+            if(e.getKeyCode() == 83 && py < 870) {
+                //py = py + 10;
+                dy = dy+10;
+            }
 
-        this.repaint();
-        this.revalidate();
+            //Izquierda
+            if(e.getKeyCode() == 65 && px > 10 ) {
+                //px = px - 10;
+                dx = dx-10;
+            }
+
+            //Derecha
+            if(e.getKeyCode() == 68 && px < 950) {
+                //px= px + 10;
+                dx = dx+10;
+            }
+
+            // verificar si la próxima posición del cuadrado está dentro de los límites
+            if (px + dx >= 0 && px + dx + 20 <= 950 && py + dy >= 0 && py + dy + 20 <= 870) {
+
+
+                // verificar si la próxima posición del cuadrado colisiona con la pared
+                Rect jugador = new Rect(px + dx, py + dy, 20, 20, new Color(0,0,0));
+
+                //PAREDES HORIZONTALES -------------------------------------------------------------------------------------------------------
+                Rect pared = new Rect(5, 5, 930, 5, Color.gray);
+                //FIN PAREDES HORIZONTALES ---------------------------------------------------------------------------------------------------
+
+
+
+                //PAREDES VERTICALES -------------------------------------------------------------------------------------------------------
+                Rect pared2 = new Rect(940, 10, 5, 710,Color.gray);
+                Rect pared3 = new Rect(5, 5, 5, 40,Color.gray);
+                //FIN PAREDES VERTICALES ---------------------------------------------------------------------------------------------------
+
+
+                if (!jugador.Colision(pared) && !jugador.Colision(pared2)) {
+                    px += dx;
+                    py += dy;
+                    this.repaint();
+                    this.revalidate();
+                }
+
+
+            }
+            /*
+            this.repaint();
+            this.revalidate();
+            */
+
+        }
     }
 
     @Override
@@ -108,29 +151,60 @@ public class Ventana extends JFrame implements KeyListener{
             g.setColor(Color.black);
             g.fillRect(px,py,20,20);
 
-            Rect r = new Rect(px, py , 20 , 20, new Color(0,0,0));
-            g.setColor(r.c);
-            g.fillRect(r.x, r.y, r.w, r.h);
 
-            //PARED
-            Rect wall = new Rect(30,30,100,200,Color.gray);
+            Rect jugador = new Rect(px, py , 20 , 20, new Color(0,0,0));
+            g.setColor(jugador.c);
+            g.fillRect(jugador.x, jugador.y, jugador.w, jugador.h);
+
+
+
+            //PAREDES HORIZONTALES -----------------------------------------------------------------------------------------------------------
+            Rect wall = new Rect(10, 10, 930, 5,Color.gray);
             g.setColor(wall.c);
             g.fillRect(wall.x, wall.y, wall.w, wall.h);
 
+            Rect pared5 = new Rect(10, 855, 930, 5,Color.gray);
+            g.setColor(pared5.c);
+            g.fillRect(pared5.x, pared5.y, pared5.w, pared5.h);
+
+            Rect pared6 = new Rect(10, 820, 930, 5,Color.gray);
+            g.setColor(pared6.c);
+            g.fillRect(pared6.x, pared6.y, pared6.w, pared6.h);
+
+            // FIN PAREDES HORIZONTALES ------------------------------------------------------------------------------------------------------
+
+
+            //PAREDES VERTICALES -----------------------------------------------------------------------------------------------------------
+            Rect pared2 = new Rect(940, 10, 5, 710,Color.gray);
+            g.setColor(pared2.c);
+            g.fillRect(pared2.x, pared2.y, pared2.w, pared2.h);
+
+            Rect pared3 = new Rect(5, 10, 5, 40,Color.gray);
+            g.setColor(pared3.c);
+            g.fillRect(pared3.x, pared3.y, pared3.w, pared3.h);
+
+            Rect pared4 = new Rect(5, 80, 5, 780,Color.GRAY);
+            g.setColor(pared4.c);
+            g.fillRect(pared4.x, pared4.y, pared4.w, pared4.h);
+            // FIN PAREDES VERTICALES ------------------------------------------------------------------------------------------------------
+
+
+            /*
             //Colisión
-            if(r.Colision(wall)){
+            if(jugador.Colision(wall)){
                 g.setColor(Color.red);
                 g.drawString("Colisión", 10, 20);
             }
 
-            /*
-            Rect p = new Rect(600,60,40,200, Color.decode("#0a8cbd"));
-            g.setColor(p.c);
-            g.fillRect(p.w, p.y, p.w, p.h);
+            // Verificar si ha ocurrido una colisión
+            if (jugador.Colision(wall)) {
+                colision = true;
+            } else {
+                colision = false;
+            }
 
+            System.out.println(jugador.Colision(wall));
             */
-
-            System.out.println(r.Colision(wall));
         }
     }
 
